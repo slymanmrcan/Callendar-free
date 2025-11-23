@@ -33,9 +33,9 @@ export default function proxy(req: NextRequest) {
         return NextResponse.next()
     }
 
-    const ip =
-        req.ip ||
+    let ip =
         req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        req.headers.get("x-real-ip") ||
         "unknown"
 
     if (isRateLimited(ip)) {

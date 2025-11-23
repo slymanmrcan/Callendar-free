@@ -2,131 +2,76 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import prisma from '@/lib/prisma'
 
-// GET /api/events/:id - Fetch single event
-export async function GET(
-    request: NextRequest,
-    { params }: { params: { id: string } }
-) {
+export const dynamic = 'force-dynamic'
+
+// GET /api/events/:id
+export async function GET(req: NextRequest, { params }: any) {
     try {
-        const { id } = params
+        const id = params.id
+
         const event = await prisma.event.findUnique({
-            where: { id },
+            where: { id }
         })
 
         if (!event) {
-            return NextResponse.json(
-                { error: 'Event not found' },
-                { status: 404 }
-            )
+            return NextResponse.json({ error: 'Event not found' }, { status: 404 })
         }
 
         return NextResponse.json(event)
     } catch (error) {
         console.error('Error fetching event:', error)
-        return NextResponse.json(
-            { error: 'Failed to fetch event' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Failed to fetch event' }, { status: 500 })
     }
 }
 
-// PUT /api/events/:id - Update event (Admin only)
-export async function PUT(
-    request: NextRequest,
-    { params }: { params: { id: string } }
-) {
+// PUT /api/events/:id
+export async function PUT(req: NextRequest, { params }: any) {
     try {
         const session = await auth()
-
         if (!session?.user) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            )
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { id } = params
-        const body = await request.json()
-        const {
-            title,
-            description,
-            startDate,
-            endDate,
-            imageUrl,
-            speaker,
-            location,
-            platform,
-            isOnline,
-        } = body
-
-        if (!title || !startDate || !endDate) {
-            return NextResponse.json(
-                { error: 'Missing required fields' },
-                { status: 400 }
-            )
-        }
-
-        const parsedStart = new Date(startDate)
-        const parsedEnd = new Date(endDate)
-
-        if (Number.isNaN(parsedStart.getTime()) || Number.isNaN(parsedEnd.getTime())) {
-            return NextResponse.json(
-                { error: 'Invalid date format' },
-                { status: 400 }
-            )
-        }
+        const id = params.id
+        const body = await req.json()
 
         const event = await prisma.event.update({
             where: { id },
             data: {
-                title: title.trim(),
-                description: description?.trim(),
-                imageUrl,
-                speaker: speaker?.trim(),
-                location: location?.trim(),
-                platform: platform?.trim(),
-                isOnline: Boolean(isOnline),
-                startDate: parsedStart,
-                endDate: parsedEnd,
-            },
+                title: body.title?.trim(),
+                description: body.description?.trim(),
+                imageUrl: body.imageUrl,
+                speaker: body.speaker?.trim(),
+                location: body.location?.trim(),
+                platform: body.platform?.trim(),
+                isOnline: Boolean(body.isOnline),
+                startDate: new Date(body.startDate),
+                endDate: new Date(body.endDate),
+            }
         })
 
         return NextResponse.json(event)
     } catch (error) {
         console.error('Error updating event:', error)
-        return NextResponse.json(
-            { error: 'Failed to update event' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Failed to update event' }, { status: 500 })
     }
 }
 
-// DELETE /api/events/:id - Delete event (Admin only)
-export async function DELETE(
-    request: NextRequest,
-    { params }: { params: { id: string } }
-) {
+// DELETE /api/events/:id
+export async function DELETE(req: NextRequest, { params }: any) {
     try {
         const session = await auth()
-
         if (!session?.user) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            )
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { id } = params
-        await prisma.event.delete({
-            where: { id },
-        })
+        const id = params.id
+
+        await prisma.event.delete({ where: { id } })
 
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('Error deleting event:', error)
-        return NextResponse.json(
-            { error: 'Failed to delete event' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Failed to delete event' }, { status: 500 })
     }
 }

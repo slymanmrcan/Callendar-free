@@ -3,6 +3,8 @@ import { auth } from '@/auth'
 import prisma from '@/lib/prisma'
 
 // GET /api/events - Fetch all events
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
     try {
         const events = await prisma.event.findMany({

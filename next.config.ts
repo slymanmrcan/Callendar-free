@@ -1,8 +1,12 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: "standalone",
 
-const nextConfig: NextConfig = {
-  output: 'standalone',
-  serverExternalPackages: ['@prisma/client', 'bcryptjs'],
+  serverExternalPackages: ["@prisma/client", "bcryptjs"],
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;

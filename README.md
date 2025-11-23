@@ -42,7 +42,7 @@ cp env.sample .env
 `env.sample` içeriği örnek olarak:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/calendar_db"
+DATABASE_URL="postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DB_NAME>"
 NEXTAUTH_SECRET="replace-with-32-char-secret"
 NEXTAUTH_URL="http://localhost:3000"
 ADMIN_EMAIL="admin@example.com"
@@ -56,6 +56,10 @@ NEXT_PUBLIC_HEADER_SUBTITLE="Kampüs, çevrim içi ve atölye buluşmalarını t
 ```bash
 openssl rand -base64 32
 ```
+- Değerleri gerçek bilgilerle değiştirin; placeholders ile build/run etmeyin. `.env` Git'e dahil edilmez (`.gitignore`, `.dockerignore`), bu yüzden kendi `.env` dosyanızı oluşturun.
+- `NEXTAUTH_URL`: Prod'da dışarıdan erişilen tam URL olmalı (örn. `https://takvim.ornek.com`). Lokal docker için `http://localhost:3000` yeter.
+- Prisma 7: `prisma/schema.prisma` içinde `url` yok; bağlantı `DATABASE_URL` üzerinden proje kökündeki `prisma.config.js` ve PrismaClient (runtime) tarafında beslenir. Runtime için `@prisma/adapter-pg` gereklidir (package.json'da var).
+- PostgreSQL kullanıcı/şifre/DB adını `DATABASE_URL` içinde kendi bilgilerinize göre verin; compose örneğinde user/pass `postgres/postgres`, db adı `calendar_db`.
 
 ### 3. Veritabanını Hazırlayın
 
@@ -136,6 +140,7 @@ GHCR gibi registry'den alırken tek fark image adı (örn. `ghcr.io/kullanici/ca
 Notlar:
 - `NEXTAUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` zorunlu; set edilmezse uygulama hata verir.
 - `NEXT_PUBLIC_HEADER_*` set edilmezse header default metinlerle gelir; değişiklik sonrası yeniden build gerekir (public env build-time).
+- Prisma CLI Prisma 7 ile çalışır; `prisma.config.js` içindeki `DATABASE_URL` kullanılır.
 
 ## Header Metinlerini Özelleştirme
 - `.env` veya `docker run -e` ile `NEXT_PUBLIC_HEADER_BADGE`, `NEXT_PUBLIC_HEADER_TITLE`, `NEXT_PUBLIC_HEADER_SUBTITLE` değerlerini set edebilirsiniz.
