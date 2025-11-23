@@ -13,22 +13,22 @@ export default function Header() {
         process.env.NEXT_PUBLIC_HEADER_SUBTITLE || "Kampüs, çevrim içi ve atölye buluşmalarını tek ekranda takip edin."
 
     return (
-        <header className="relative overflow-hidden border-b border-white/10 bg-gradient-to-r from-sky-950 via-slate-900 to-slate-950 text-slate-50 shadow-2xl">
-            <div className="absolute left-10 top-[-40px] h-40 w-40 rounded-full bg-sky-400/20 blur-3xl" />
-            <div className="absolute right-6 bottom-[-60px] h-44 w-44 rounded-full bg-amber-300/10 blur-3xl" />
-            <div className="relative mx-auto flex max-w-6xl flex-col gap-3 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 shadow-lg shadow-sky-900/40">
-                        <Calendar className="h-6 w-6 text-sky-100" />
+        <header className="relative overflow-hidden border-b border-white/10 bg-gradient-to-r from-sky-700 via-slate-700 to-slate-900 text-slate-50 shadow-lg">
+            <div className="absolute left-6 top-[-30px] h-24 w-24 rounded-full bg-sky-200/25 blur-2xl" />
+            <div className="absolute right-3 bottom-[-40px] h-28 w-28 rounded-full bg-amber-200/18 blur-2xl" />
+            <div className="relative mx-auto flex max-w-6xl flex-col gap-1.5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-white/10 shadow-md shadow-sky-900/30">
+                        <Calendar className="h-4 w-4 text-sky-100" />
                     </div>
-                    <div className="space-y-1">
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-200/80">
+                    <div className="space-y-0.5">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-200/80">
                             {headerBadge}
                         </p>
-                        <h1 className="text-2xl font-semibold leading-tight text-white">
+                        <h1 className="text-lg font-semibold leading-tight text-white">
                             {headerTitle}
                         </h1>
-                        <p className="text-sm text-slate-200/80">
+                        <p className="text-[12px] text-slate-200/80">
                             {headerSubtitle}
                         </p>
                     </div>
@@ -36,16 +36,16 @@ export default function Header() {
 
                 {session && (
                     <div className="flex items-center gap-3">
-                        <div className="flex flex-col text-right leading-tight text-xs text-slate-200 sm:text-sm">
-                            <span className="text-white font-semibold">Hoş geldin</span>
-                            <span className="text-slate-200/80 truncate max-w-[200px]">
+                        <div className="flex flex-col text-right leading-tight text-[10px] text-slate-200 sm:text-[11px]">
+                            <span className="text-white font-semibold text-[11px] sm:text-xs">Hoş geldin</span>
+                            <span className="text-slate-200/80 truncate max-w-[140px] sm:max-w-[180px]">
                                 {session.user?.name || session.user?.email}
                             </span>
                         </div>
                         <Button
                             onClick={() => signOut({ callbackUrl: "/" })}
                             variant="secondary"
-                            className="border border-white/20 bg-white/15 text-white hover:bg-white/25"
+                            className="border border-white/20 bg-white/15 text-white hover:bg-white/25 px-3 py-[6px] text-[11px]"
                         >
                             Çıkış Yap
                         </Button>

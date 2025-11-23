@@ -178,25 +178,7 @@ export default function HomePage() {
     <>
       <Header />
 
-      <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 pb-10 pt-6 sm:px-6">
-        <section className="rounded-2xl border border-white/10 bg-white/5 p-5 text-slate-100 shadow-xl backdrop-blur">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-200/80">
-                Topluluk Takvimi
-              </p>
-              <h2 className="text-xl font-semibold text-white">Etkinlikler tek bakışta</h2>
-              <p className="text-sm text-slate-200/80">
-                Atölye, seminer ve kulüp buluşmalarını güncel tutmak için takvimi kullanın.
-              </p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200/90 shadow-inner">
-              <p className="font-semibold text-white">Yönetici ipucu</p>
-              <p>Kutucuklara tıklayarak yeni etkinlik oluşturabilir, etkinliklere tıklayarak düzenleyebilirsiniz.</p>
-            </div>
-          </div>
-        </section>
-
+      <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-4 px-3 pb-10 pt-4 sm:px-6">
         <Calendar
           events={events}
           onSelectEvent={handleSelectEvent}

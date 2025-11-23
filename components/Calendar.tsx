@@ -51,24 +51,19 @@ export default function Calendar({ events, onSelectEvent, onSelectSlot, isAdmin 
 
         return (
             <div
-                className="flex flex-col gap-1"
-                title={`${event.title} (${startTime} - ${endTime})${event.description ? ` • ${event.description}` : ''}`}
+                className="flex w-full max-w-full flex-col gap-0.5 box-border overflow-hidden text-ellipsis whitespace-nowrap"
+                title={`${event.title} (${startTime} - ${endTime})${venue ? ` • ${venue}` : ''}`}
             >
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide opacity-90">
-                    <span className="rounded-sm bg-white/20 px-1.5 py-0.5 leading-none">
+                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide opacity-90">
+                    <span className="rounded-sm bg-white/20 px-1 py-0.5 leading-none">
                         {startTime} - {endTime}
                     </span>
                 </div>
-                <div className="text-sm font-semibold leading-tight">
+                <div className="text-[12px] font-semibold leading-tight line-clamp-2">
                     {event.title}
                 </div>
-                {event.description && (
-                    <div className="text-[12px] leading-snug opacity-90 line-clamp-2">
-                        {event.description}
-                    </div>
-                )}
                 {venue && (
-                    <div className="text-[11px] font-medium text-slate-100/90">
+                    <div className="text-[11px] font-medium text-slate-100/90 line-clamp-1">
                         {event.isOnline ? `Online · ${venue}` : `Konum · ${venue}`}
                     </div>
                 )}
@@ -129,7 +124,7 @@ export default function Calendar({ events, onSelectEvent, onSelectSlot, isAdmin 
     }
 
     return (
-        <div className="w-full rounded-2xl border border-white/10 bg-slate-900/60 p-3 shadow-2xl backdrop-blur sm:p-5 min-h-[65vh] sm:min-h-[78vh]">
+        <div className="w-full rounded-2xl border border-white/10 bg-slate-900/60 p-3 shadow-2xl backdrop-blur sm:p-5 min-h-[95vh] sm:min-h-[110vh] overflow-visible">
             <BigCalendar
                 localizer={localizer}
                 events={events}
@@ -146,7 +141,9 @@ export default function Calendar({ events, onSelectEvent, onSelectSlot, isAdmin 
                 messages={messages}
                 popup
                 components={{ event: CalendarEvent }}
-                style={{ minHeight: "65vh" }}
+                style={{ height: "auto", minHeight: "105vh" }}
+                step={30}
+                timeslots={2}
             />
         </div>
     )
