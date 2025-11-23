@@ -14,8 +14,9 @@ COPY . .
 # Prisma Client üret
 RUN npx prisma generate
 
-# Next build
-ENV DATABASE_URL=$DATABASE_URL
+# Next build (placeholder DATABASE_URL, build arg ile override edilebilir)
+ARG DATABASE_URL=postgresql://user:pass@localhost:5432/db
+ENV DATABASE_URL=${DATABASE_URL}
 RUN npm run build
 
 FROM node:20-slim AS runner
