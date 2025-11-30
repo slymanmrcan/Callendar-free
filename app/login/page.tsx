@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -127,6 +128,12 @@ export default function LoginPage() {
                         <Button type="submit" className="w-full" disabled={loading}>
                             {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
                         </Button>
+                        <p className="text-sm text-muted-foreground text-center">
+                            Hesabın yok mu?{" "}
+                            <Link href="/register" className="underline">
+                                Kayıt Ol
+                            </Link>
+                        </p>
                     </form>
                 </CardContent>
             </Card>

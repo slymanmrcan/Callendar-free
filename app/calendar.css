@@ -8,7 +8,7 @@
     padding: 10px;
     box-shadow: 0 22px 70px rgba(0, 0, 0, 0.35);
     height: auto;
-    min-height: 980px;
+    min-height: clamp(520px, 72vh, 900px);
     border: 1px solid rgba(148, 163, 184, 0.18);
     backdrop-filter: blur(12px);
     overflow: visible;
@@ -69,13 +69,13 @@
     overflow: visible;
     box-shadow: none;
     border: none;
-    min-height: 820px;
+    min-height: clamp(460px, 64vh, 820px);
     height: auto !important;
 }
 
 /* Month rows: daha serbest esneme */
 .rbc-month-row {
-    min-height: 150px;
+    min-height: 120px;
     height: auto !important;
     flex: 1 0 auto;
     overflow: visible;

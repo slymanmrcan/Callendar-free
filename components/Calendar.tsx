@@ -124,7 +124,7 @@ export default function Calendar({ events, onSelectEvent, onSelectSlot, isAdmin 
     }
 
     return (
-        <div className="w-full rounded-2xl border border-white/10 bg-slate-900/60 p-3 shadow-2xl backdrop-blur sm:p-5 min-h-[95vh] sm:min-h-[110vh] overflow-visible">
+        <div className="w-full max-w-full rounded-2xl border border-white/10 bg-slate-900/60 p-3 shadow-2xl backdrop-blur sm:p-5 min-h-[60vh] sm:min-h-[70vh] overflow-auto">
             <BigCalendar
                 localizer={localizer}
                 events={events}
@@ -141,7 +141,7 @@ export default function Calendar({ events, onSelectEvent, onSelectSlot, isAdmin 
                 messages={messages}
                 popup
                 components={{ event: CalendarEvent }}
-                style={{ height: "auto", minHeight: "105vh" }}
+                style={{ height: "calc(100vh - 180px)", minHeight: "60vh", maxHeight: "90vh" }}
                 step={30}
                 timeslots={2}
             />

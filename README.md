@@ -42,23 +42,25 @@ cp env.sample .env
 `env.sample` içeriği örnek olarak:
 
 ```env
-DATABASE_URL="postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DB_NAME>"
-NEXTAUTH_SECRET="replace-with-32-char-secret"
-NEXTAUTH_URL="http://localhost:3000"
-ADMIN_EMAIL="admin@example.com"
-ADMIN_PASSWORD="replace-with-strong-password"
-NEXT_PUBLIC_HEADER_BADGE="Bilgisayar Kavramları Topluluğu"
-NEXT_PUBLIC_HEADER_TITLE="Etkinlik Takvimi"
-NEXT_PUBLIC_HEADER_SUBTITLE="Kampüs, çevrim içi ve atölye buluşmalarını tek ekranda takip edin."
+DATABASE_URL=postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DB_NAME>
+NEXTAUTH_SECRET=replace-with-32-char-secret
+NEXTAUTH_URL=http://localhost:3000
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=replace-with-strong-password
+REGISTER_CODE=set-a-registration-code
+NEXT_PUBLIC_HEADER_BADGE=Bilgisayar Kavramları Topluluğu
+NEXT_PUBLIC_HEADER_TITLE=Etkinlik Takvimi
+NEXT_PUBLIC_HEADER_SUBTITLE=Kampüs, çevrim içi ve atölye buluşmalarını tek ekranda takip edin.
 ```
 
 **NEXTAUTH_SECRET oluşturmak için**:
 ```bash
 openssl rand -base64 32
 ```
-- Değerleri gerçek bilgilerle değiştirin; placeholders ile build/run etmeyin. `.env` Git'e dahil edilmez (`.gitignore`, `.dockerignore`), bu yüzden kendi `.env` dosyanızı oluşturun.
+- Değerleri gerçek bilgilerle değiştirin; placeholders ile build/run etmeyin. `.env` Git'e dahil edilmez (`.gitignore`, `.dockerignore`), bu yüzden kendi `.env` dosyanızı oluşturun. Env satırlarında tırnak kullanmayın.
 - `NEXTAUTH_URL`: Prod'da dışarıdan erişilen tam URL olmalı (örn. `https://takvim.ornek.com`). Lokal docker için `http://localhost:3000` yeter.
-- Prisma 7: `prisma/schema.prisma` içinde `url` yok; bağlantı `DATABASE_URL` üzerinden proje kökündeki `prisma.config.js` ve PrismaClient (runtime) tarafında beslenir. Runtime için `@prisma/adapter-pg` gereklidir (package.json'da var).
+- Prisma 6: `prisma/schema.prisma` içinde `url = env("DATABASE_URL")` tanımlıdır; bağlantı değeri `.env` üzerinden gelir. Runtime için `@prisma/adapter-pg` gereklidir (package.json'da var).
+- Kayıt kodu zorunlu: `.env` içindeki `REGISTER_CODE` seed sırasında `RegistrationCode` tablosuna yazılır; UI'da kayıt formu bu kodu ister.
 - PostgreSQL kullanıcı/şifre/DB adını `DATABASE_URL` içinde kendi bilgilerinize göre verin; compose örneğinde user/pass `postgres/postgres`, db adı `calendar_db`.
 
 ### 3. Veritabanını Hazırlayın
@@ -73,7 +75,7 @@ npx prisma generate
 npx prisma migrate dev --name init
 
 # Seed verilerini yükle (admin kullanıcı)
-ADMIN_EMAIL=... ADMIN_PASSWORD=... npx prisma db seed
+ADMIN_EMAIL=... ADMIN_PASSWORD=... REGISTER_CODE=... npx prisma db seed
 ```
 
 ### 4. Uygulamayı Çalıştırın
@@ -87,6 +89,7 @@ Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacakt�
 ## Admin Kullanıcı
 
 Seed sırasında `.env` içindeki `ADMIN_EMAIL` / `ADMIN_PASSWORD` kullanılır; şifreyi güçlü seçin. Varsayılan yoktur, değişkenler set edilmezse seed hata verir.
+- Yeni kullanıcı kayıtları için `/register` sayfasındaki form kullanılır ve `REGISTER_CODE` ile doğrulama yapılır.
 
 ## Kısayol Kullanım Akışı
 
@@ -106,18 +109,19 @@ Seed sırasında `.env` içindeki `ADMIN_EMAIL` / `ADMIN_PASSWORD` kullanılır;
 
 ## Docker ile Çalıştırma (örnek)
 
-`.env` dosyanızı `env.sample`'dan kopyalayıp doldurduktan sonra:
+`.env` dosyanızı `env.sample`'dan kopyalayıp doldurun. Build aşamasında `DATABASE_URL` için default `postgresql://postgres:postgres@localhost:5432/calendar_db` kullanılır, bu yüzden image üretirken env olmasa da build patlamaz. Diğer env'ler (NEXTAUTH_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD vb.) env'den gelmek zorunda; DB dışındaki yapıları hardcode etmedik.
 
 ```bash
-# build
+# build (env olmasa da default DB URL ile generate/build çalışır)
 docker build -t calendar-app .
 
-# migrate + seed (bir defa)
-docker run --rm --env-file .env calendar-app npx prisma migrate deploy
+# seed (migrate deploy container start'ta otomatik çalışır; seed'i manuel tetikleyin)
 docker run --rm --env-file .env calendar-app npx prisma db seed
 
-# run
+# run (container start'ta entrypoint otomatik `prisma migrate deploy` çalıştırır; boş DB ise tabloları kurar)
+# mutlaka env verin; aksi halde container içindeki default DB localhost'a bakar
 docker run -p 3000:3000 --env-file .env calendar-app
+# Eğer Postgres ayrı bir container'da ise `DATABASE_URL`'da host olarak o container'ın adı veya `host.docker.internal` kullanın (örn: `postgresql://postgres:postgres@host.docker.internal:5432/calendar_db`). Aynı bridge ağına koymak için `docker network create calendar-net && docker network connect calendar-net pg && docker run --network calendar-net ...` kullanabilirsiniz.
 # header metinlerini override etmek için (örnek):
 # docker run -p 3000:3000 --env-file .env -e NEXT_PUBLIC_HEADER_TITLE="Topluluk Takvimi" calendar-app
 ```
@@ -131,16 +135,18 @@ GHCR gibi registry'den alırken tek fark image adı (örn. `ghcr.io/kullanici/ca
    docker compose up --build
    ```
    İlk çalıştırmada Postgres için `db_data` volume oluşur; app image'ı build edilir.
-3. Prod migrate/seed (bir kere):
+3. Prod seed (migrate deploy container start'ta otomatik çalışır; seed'i manuel tetikleyin):
    ```bash
-   docker compose run --rm app npx prisma migrate deploy
    docker compose run --rm app npx prisma db seed
    ```
 
 Notlar:
 - `NEXTAUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` zorunlu; set edilmezse uygulama hata verir.
+- `REGISTER_CODE` zorunlu; seed sırasında `RegistrationCode` tablosuna eklenir ve kayıt formu bu kodu ister.
+- `DATABASE_URL` set edilmezse build/generate/seed sırasında default `postgresql://postgres:postgres@localhost:5432/calendar_db` adresi kullanılır. Prod için gerçek DB bilgilerinizi `.env` veya `-e` ile verin; DB dışında hiçbir env hardcode edilmez.
+- Container içinde `localhost` DB host'u çalışmaz; `host.docker.internal` veya aynı docker ağına alınmış bir servis adı (örn. `pg`) kullanın. `entrypoint.sh` `localhost` görürse otomatik `host.docker.internal`'a çevirir.
 - `NEXT_PUBLIC_HEADER_*` set edilmezse header default metinlerle gelir; değişiklik sonrası yeniden build gerekir (public env build-time).
-- Prisma CLI Prisma 7 ile çalışır; `prisma.config.js` içindeki `DATABASE_URL` kullanılır.
+- Prisma CLI Prisma 6 ile çalışır; `prisma.config.js` içindeki `DATABASE_URL` kullanılır. Container start esnasında entrypoint `prisma migrate deploy` çalıştırır; seed için komutları elle verin.
 
 ## Header Metinlerini Özelleştirme
 - `.env` veya `docker run -e` ile `NEXT_PUBLIC_HEADER_BADGE`, `NEXT_PUBLIC_HEADER_TITLE`, `NEXT_PUBLIC_HEADER_SUBTITLE` değerlerini set edebilirsiniz.

@@ -2,9 +2,12 @@ import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 import pg from "pg"
 
-const databaseUrl = process.env.DATABASE_URL
-if (!databaseUrl) {
-    throw new Error("DATABASE_URL env variable is required.")
+const DEFAULT_DATABASE_URL = "postgresql://postgres:Sifre123@localhost:15432/calendar"
+
+const databaseUrl = process.env.DATABASE_URL || DEFAULT_DATABASE_URL
+
+if (!process.env.DATABASE_URL) {
+    console.warn("DATABASE_URL env is missing. Falling back to default local Postgres URL.")
 }
 
 const adapter = new PrismaPg(

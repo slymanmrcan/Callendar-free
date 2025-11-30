@@ -178,7 +178,7 @@ export default function HomePage() {
     <>
       <Header />
 
-      <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-4 px-3 pb-10 pt-4 sm:px-6">
+      <main className="relative mx-auto flex w-full max-w-[1800px] flex-col gap-4 px-2 pb-10 pt-4 sm:px-5 lg:px-10">
         <Calendar
           events={events}
           onSelectEvent={handleSelectEvent}
