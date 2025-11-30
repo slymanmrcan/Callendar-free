@@ -121,7 +121,10 @@ docker run --rm --env-file .env calendar-app npx prisma db seed
 # run (container start'ta entrypoint otomatik `prisma migrate deploy` çalıştırır; boş DB ise tabloları kurar)
 # mutlaka env verin; aksi halde container içindeki default DB localhost'a bakar
 docker run -p 3000:3000 --env-file .env calendar-app
-# Eğer Postgres ayrı bir container'da ise `DATABASE_URL`'da host olarak o container'ın adı veya `host.docker.internal` kullanın (örn: `postgresql://postgres:postgres@host.docker.internal:5432/calendar_db`). Aynı bridge ağına koymak için `docker network create calendar-net && docker network connect calendar-net pg && docker run --network calendar-net ...` kullanabilirsiniz.
+# Eğer Postgres aynı docker ağına bağlı farklı bir container'daysa `DATABASE_URL`'da host olarak o container'ın adı veya `host.docker.internal` kullanın (örn: `postgresql://postgres:postgres@host.docker.internal:5432/calendar_db`). Aynı bridge ağına koymak için:
+#   docker network create calendar-net
+#   docker network connect calendar-net pg
+#   docker run --network calendar-net -p 3000:3000 --env-file .env calendar-app
 # header metinlerini override etmek için (örnek):
 # docker run -p 3000:3000 --env-file .env -e NEXT_PUBLIC_HEADER_TITLE="Topluluk Takvimi" calendar-app
 ```

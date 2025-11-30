@@ -1,19 +1,12 @@
 #!/bin/sh
 set -eu
 
-# Default DB URL (Docker host erişimi için host.docker.internal kullanır)
-DEFAULT_DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/callendar?schema=public"
-
-# Eğer env gelmemişse fallback kullan
-FINAL_DATABASE_URL="${DATABASE_URL:-$DEFAULT_DATABASE_URL}"
-
-# Container içinde localhost kullanımı başarısız olacağı için otomatik host.docker.internal'a çevir
-if echo "$FINAL_DATABASE_URL" | grep -q "localhost:"; then
-  echo "DATABASE_URL points to localhost; rewriting host to host.docker.internal"
-  FINAL_DATABASE_URL=$(echo "$FINAL_DATABASE_URL" | sed 's/localhost/host.docker.internal/')
+# Sadece mevcut DATABASE_URL ile migrate yap
+if [ -z "${DATABASE_URL:-}" ]; then
+  echo "DATABASE_URL tanımlı değil. Migration için zorunlu."
+  exit 1
 fi
 
-export DATABASE_URL="$FINAL_DATABASE_URL"
-
+echo "Running Prisma migrations..."
 npx --no-install prisma migrate deploy
-exec node server.js
+echo "Migrations completed."
