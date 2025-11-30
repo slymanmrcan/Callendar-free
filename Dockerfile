@@ -46,8 +46,9 @@ COPY --from=builder /app/package.json ./package.json
 # Migration + Seed scriptleri
 COPY --from=builder /app/scripts ./scripts
 
-# Prisma runtime engine
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# Prisma runtime engine ve CLI
+# Tüm node_modules'u kopyalıyoruz çünkü Prisma CLI'ın bağımlılıkları (effect vb.) dağınık olabilir
+COPY --from=builder /app/node_modules ./node_modules
 
 # Entrypoint
 COPY --from=builder /app/entrypoint.sh ./entrypoint.sh

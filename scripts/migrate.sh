@@ -7,4 +7,4 @@ if [ -z "${DATABASE_URL:-}" ]; then
 fi
 
 echo "Running Prisma migrations..."
-npx --no-install prisma migrate deploy
+node_modules/.bin/prisma migrate deploy

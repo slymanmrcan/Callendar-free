@@ -7,4 +7,4 @@ if [ -z "${DATABASE_URL:-}" ]; then
 fi
 
 echo "Running Prisma seed..."
-npx --no-install prisma db seed
+node_modules/.bin/tsx prisma/seed.ts
